@@ -5,7 +5,7 @@ const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const Campground = require("./models/campground");
 const catchAsync = require('./utilities/catchAsync');
-const ExpressError = require('./utilities/ExpressError')
+const ExpressError = require('./utilities/ExpressError');
 
 const app = express();
 
@@ -68,12 +68,14 @@ app.delete("/campgrounds/:id", catchAsync(async (req,res)=>{
   }));
 
 app.all('*',(req,res,next)=>{
-  res.send('404')
+  next(new ExpressError('Page Not Found...', 404))
 })
 
-app.use((err,req, res, next)=>[
+app.use((err,req, res, next)=>{
+  const {statusCode, message} = err;
+  res.status()
   res.send('Oh boy, something went wrong...')
-])
+})
 
 app.listen(4000, () => {
   console.log("Serving on port 4000");
