@@ -38,6 +38,7 @@ app.get("/campgrounds/new", (req, res) => {
 });
 
 app.post("/campgrounds", catchAsync(async (req, res) => {
+  if(!req.body.campground) throw new ExpressError()
   const newCampground = new Campground(req.body.campground);
   await newCampground.save();
   res.redirect(`campgrounds/${newCampground._id}`);
@@ -72,9 +73,8 @@ app.all('*',(req,res,next)=>{
 })
 
 app.use((err,req, res, next)=>{
-  const {statusCode, message} = err;
-  res.status()
-  res.send('Oh boy, something went wrong...')
+  const {statusCode = 500, message = 'Something went wrong'} = err;
+  res.status(statusCode).send(message)
 })
 
 app.listen(4000, () => {
