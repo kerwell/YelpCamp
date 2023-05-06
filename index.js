@@ -5,6 +5,7 @@ const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const Campground = require("./models/campground");
 const catchAsync = require('./utilities/catchAsync');
+const ExpressError = require('./utilities/ExpressError')
 
 const app = express();
 
@@ -65,6 +66,10 @@ app.delete("/campgrounds/:id", catchAsync(async (req,res)=>{
     const campground = await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
   }));
+
+app.all('*',(req,res,next)=>{
+  res.send('404')
+})
 
 app.use((err,req, res, next)=>[
   res.send('Oh boy, something went wrong...')
