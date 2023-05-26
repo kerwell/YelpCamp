@@ -76,15 +76,21 @@ app.put("/campgrounds/:id", validateCampground, catchAsync(async (req, res) => {
 }));
 
 app.delete("/campgrounds/:id", catchAsync(async (req,res)=>{
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
-    res.redirect('/campgrounds');
-  }));
+  const { id } = req.params;
+  const campground = await Campground.findByIdAndDelete(id);
+  res.redirect('/campgrounds');
+}));
 
-app.post("/campgrounds/:id/reviews", catchAsync(async (req,res)=>{
-  const {id} = req.params;
+app.post("/campgrounds/:id/reviews", catchAsync(async (req, res) => {
+  const { id } = req.params;
   const campground = await Campground.findById(id);
-  const review = new Review(req.body.review)
+  const review = new Review(req.body.review);
+  campground.reviews.push(review);
+  // await review.save();
+  // await campground.save();
+  await Promise.all([review.save(), campground.save()]);
+  // mongoose way in making two promise await concurrently
+  res.redirect(`/campgrounds/${campground._id}`);
 }));
 
 app.all('*',(req,res,next)=>{
